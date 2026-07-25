@@ -1,6 +1,7 @@
 """
 file_manager.py
-ファイル・フォルダ管理
+Plant Analyzer
+ファイル・フォルダ・CSV管理
 """
 
 from pathlib import Path
@@ -17,6 +18,7 @@ from config import (
     CSV_NAME,
 )
 
+
 # ==========================
 # フォルダ作成
 # ==========================
@@ -29,54 +31,73 @@ def create_folders():
 
         pot_dir = DATA_DIR / pot
 
-        (pot_dir / ORIGINAL_FOLDER).mkdir(parents=True, exist_ok=True)
-        (pot_dir / MASK_FOLDER).mkdir(parents=True, exist_ok=True)
-        (pot_dir / OVERLAY_FOLDER).mkdir(parents=True, exist_ok=True)
+        (pot_dir / ORIGINAL_FOLDER).mkdir(
+            parents=True,
+            exist_ok=True
+        )
 
-        csv_path = pot_dir / CSV_NAME
+        (pot_dir / MASK_FOLDER).mkdir(
+            parents=True,
+            exist_ok=True
+        )
 
-        if not csv_path.exists():
+        (pot_dir / OVERLAY_FOLDER).mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        csv_file = pot_dir / CSV_NAME
+
+        if not csv_file.exists():
 
             df = pd.DataFrame(columns=[
+
                 "Date",
                 "Time",
                 "Treatment",
+
                 "Coverage",
+
                 "LeafPixels",
-                "DarkGreen",
-                "Green",
-                "LightGreen",
-                "Yellow",
-                "Brown",
+
+                "DarkGreenPixel",
+                "GreenPixel",
+                "LightGreenPixel",
+                "YellowPixel",
+                "BrownPixel",
+
                 "DarkGreenRatio",
                 "GreenRatio",
                 "LightGreenRatio",
                 "YellowRatio",
-                "BrownRatio",
+                "BrownRatio"
+
             ])
 
-            df.to_csv(csv_path, index=False)
+            df.to_csv(csv_file, index=False)
+
 
 # ==========================
 # 現在日時
 # ==========================
 
-def now():
+def get_datetime():
 
-    t = datetime.now()
+    now = datetime.now()
 
-    return (
-        t.strftime("%Y-%m-%d"),
-        t.strftime("%H-%M-%S")
-    )
+    date = now.strftime("%Y-%m-%d")
+    time = now.strftime("%H-%M-%S")
+
+    return date, time
+
 
 # ==========================
-# 元画像保存
+# 画像保存
 # ==========================
 
-def save_original(pot_name, image):
+def save_original_image(pot_name, image):
 
-    date, time = now()
+    date, time = get_datetime()
 
     filename = f"{date}_{time}.jpg"
 
@@ -91,13 +112,10 @@ def save_original(pot_name, image):
 
     return path
 
-# ==========================
-# マスク保存
-# ==========================
 
-def save_mask(pot_name, image):
+def save_mask_image(pot_name, mask):
 
-    date, time = now()
+    date, time = get_datetime()
 
     filename = f"{date}_{time}.png"
 
@@ -108,17 +126,14 @@ def save_mask(pot_name, image):
         / filename
     )
 
-    cv2.imwrite(str(path), image)
+    cv2.imwrite(str(path), mask)
 
     return path
 
-# ==========================
-# Overlay保存
-# ==========================
 
-def save_overlay(pot_name, image):
+def save_overlay_image(pot_name, overlay):
 
-    date, time = now()
+    date, time = get_datetime()
 
     filename = f"{date}_{time}.png"
 
@@ -129,6 +144,71 @@ def save_overlay(pot_name, image):
         / filename
     )
 
-    cv2.imwrite(str(path), image)
+    cv2.imwrite(str(path), overlay)
 
     return path
+
+
+# ==========================
+# CSVへ追加
+# ==========================
+
+def save_csv(
+
+        pot_name,
+        treatment,
+        coverage,
+        leaf_pixels,
+        pixels,
+        ratios
+
+):
+
+    csv_path = DATA_DIR / pot_name / CSV_NAME
+
+    df = pd.read_csv(csv_path)
+
+    date, time = get_datetime()
+
+    row = {
+
+        "Date": date,
+        "Time": time,
+        "Treatment": treatment,
+
+        "Coverage": coverage,
+
+        "LeafPixels": leaf_pixels,
+
+        "DarkGreenPixel": pixels["Dark Green"],
+        "GreenPixel": pixels["Green"],
+        "LightGreenPixel": pixels["Light Green"],
+        "YellowPixel": pixels["Yellow"],
+        "BrownPixel": pixels["Brown"],
+
+        "DarkGreenRatio": ratios["Dark Green"],
+        "GreenRatio": ratios["Green"],
+        "LightGreenRatio": ratios["Light Green"],
+        "YellowRatio": ratios["Yellow"],
+        "BrownRatio": ratios["Brown"]
+
+    }
+
+    df.loc[len(df)] = row
+
+    df.to_csv(csv_path, index=False)
+
+
+# ==========================
+# CSV読込
+# ==========================
+
+def load_csv(pot_name):
+
+    csv_path = DATA_DIR / pot_name / CSV_NAME
+
+    if csv_path.exists():
+
+        return pd.read_csv(csv_path)
+
+    return pd.DataFrame()
