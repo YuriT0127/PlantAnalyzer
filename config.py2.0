@@ -1,0 +1,125 @@
+"""
+PlantAnalyzer Ver.2.0
+config.py
+各種設定
+"""
+
+from pathlib import Path
+
+# ==========================================
+# 基本フォルダ
+# ==========================================
+
+BASE_DIR = Path(__file__).parent
+
+DATA_DIR = BASE_DIR / "data"
+
+ORIGINAL_DIR = DATA_DIR / "original"
+MASK_DIR = DATA_DIR / "mask"
+OVERLAY_DIR = DATA_DIR / "overlay"
+
+CSV_DIR = DATA_DIR / "csv"
+EXCEL_DIR = DATA_DIR / "excel"
+
+HISTORY_DIR = BASE_DIR / "history"
+
+# ==========================================
+# 作成
+# ==========================================
+
+for folder in [
+    DATA_DIR,
+    ORIGINAL_DIR,
+    MASK_DIR,
+    OVERLAY_DIR,
+    CSV_DIR,
+    EXCEL_DIR,
+    HISTORY_DIR,
+]:
+    folder.mkdir(parents=True, exist_ok=True)
+
+# ==========================================
+# ポット設定
+# ==========================================
+
+POT_COUNT = 12
+
+POT_NAMES = [
+    "Pot1",
+    "Pot2",
+    "Pot3",
+    "Pot4",
+    "Pot5",
+    "Pot6",
+    "Pot7",
+    "Pot8",
+    "Pot9",
+    "Pot10",
+    "Pot11",
+    "Pot12",
+]
+
+# ==========================================
+# 処理区
+# ==========================================
+
+TREATMENTS = [
+    "Control",
+    "Treatment A",
+    "Treatment B",
+    "Treatment C",
+]
+
+# ==========================================
+# 画像設定
+# ==========================================
+
+IMAGE_EXTENSIONS = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".bmp",
+    ".tif",
+    ".tiff",
+]
+
+# ==========================================
+# 色判定(BGR)
+# ==========================================
+
+GREEN_LOWER = (35, 40, 40)
+GREEN_UPPER = (90, 255, 255)
+
+YELLOW_LOWER = (20, 40, 40)
+YELLOW_UPPER = (35, 255, 255)
+
+BROWN_LOWER = (5, 30, 20)
+BROWN_UPPER = (20, 255, 255)
+
+# ==========================================
+# Excel
+# ==========================================
+
+EXCEL_FILENAME = "PlantAnalyzer_Result.xlsx"
+
+# ==========================================
+# CSV
+# ==========================================
+
+CSV_FILENAME = "PlantAnalyzer_Result.csv"
+
+# ==========================================
+# グラフ
+# ==========================================
+
+GRAPH_WIDTH = 10
+GRAPH_HEIGHT = 6
+GRAPH_DPI = 150
+
+# ==========================================
+# アプリ名
+# ==========================================
+
+APP_NAME = "PlantAnalyzer Ver.2.0"
+
+VERSION = "2.0"
