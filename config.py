@@ -1,3 +1,6 @@
+from pathlib import Path
+import numpy as np
+
 # データ保存フォルダ
 DATA_DIR = Path("data")
 
