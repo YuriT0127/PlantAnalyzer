@@ -123,3 +123,47 @@ GRAPH_DPI = 150
 APP_NAME = "PlantAnalyzer Ver.2.0"
 
 VERSION = "2.0"
+
+# ==========================================
+# file_manager.py 互換設定
+# ==========================================
+
+ORIGINAL_FOLDER = "original"
+MASK_FOLDER = "mask"
+OVERLAY_FOLDER = "overlay"
+
+CSV_NAME = CSV_FILENAME
+
+# ==========================================
+# image_analysis.py 互換設定
+# ==========================================
+
+import numpy as np
+
+COLOR_RANGES = {
+
+    "Dark Green": (
+        np.array([35, 80, 30]),
+        np.array([60, 255, 180])
+    ),
+
+    "Green": (
+        np.array([35, 40, 40]),
+        np.array([90, 255, 255])
+    ),
+
+    "Light Green": (
+        np.array([40, 20, 120]),
+        np.array([90, 120, 255])
+    ),
+
+    "Yellow": (
+        np.array([20, 40, 40]),
+        np.array([35, 255, 255])
+    ),
+
+    "Brown": (
+        np.array([5, 30, 20]),
+        np.array([20, 255, 255])
+    ),
+}
