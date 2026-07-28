@@ -64,12 +64,20 @@ POT_NAMES = [
 # 処理区
 # ==========================================
 
-TREATMENTS = [
-    "Control",
-    "Treatment A",
-    "Treatment B",
-    "Treatment C",
-]
+TREATMENTS = {
+    "Pot1": "Control",
+    "Pot2": "Control",
+    "Pot3": "Control",
+    "Pot4": "Treatment A",
+    "Pot5": "Treatment A",
+    "Pot6": "Treatment A",
+    "Pot7": "Treatment B",
+    "Pot8": "Treatment B",
+    "Pot9": "Treatment B",
+    "Pot10": "Treatment C",
+    "Pot11": "Treatment C",
+    "Pot12": "Treatment C",
+}
 
 # ==========================================
 # 画像設定
@@ -142,36 +150,6 @@ CSV_NAME = CSV_FILENAME
 # ==========================================
 # image_analysis.py 互換設定
 # ==========================================
-
-import numpy as np
-
-COLOR_RANGES = {
-
-    "Dark Green": (
-        np.array([35, 80, 30]),
-        np.array([60, 255, 180])
-    ),
-
-    "Green": (
-        np.array([35, 40, 40]),
-        np.array([90, 255, 255])
-    ),
-
-    "Light Green": (
-        np.array([40, 20, 120]),
-        np.array([90, 120, 255])
-    ),
-
-    "Yellow": (
-        np.array([20, 40, 40]),
-        np.array([35, 255, 255])
-    ),
-
-    "Brown": (
-        np.array([5, 30, 20]),
-        np.array([20, 255, 255])
-    ),
-}
 
 COLOR_RANGES = {
 
