@@ -5,6 +5,7 @@ config.py
 """
 
 from pathlib import Path
+import numpy as np
 
 # ==========================================
 # 基本フォルダ
@@ -107,6 +108,10 @@ EXCEL_FILENAME = "PlantAnalyzer_Result.xlsx"
 # ==========================================
 
 CSV_FILENAME = "PlantAnalyzer_Result.csv"
+CSV_NAME = CSV_FILENAME
+ORIGINAL_FOLDER = "original"
+MASK_FOLDER = "mask"
+OVERLAY_FOLDER = "overlay"
 
 # ==========================================
 # グラフ
@@ -166,4 +171,37 @@ COLOR_RANGES = {
         np.array([5, 30, 20]),
         np.array([20, 255, 255])
     ),
+}
+
+COLOR_RANGES = {
+
+    "Dark Green": (
+        np.array([35, 80, 30]),
+        np.array([60, 255, 180])
+    ),
+
+    "Green": (
+        np.array([35, 40, 40]),
+        np.array([90, 255, 255])
+    ),
+
+    "Light Green": (
+        np.array([40, 20, 120]),
+        np.array([90, 120, 255])
+    ),
+
+    "Yellow": (
+        np.array([20, 40, 40]),
+        np.array([35, 255, 255])
+    ),
+
+    "Brown": (
+        np.array([5, 30, 20]),
+        np.array([20, 255, 255])
+    ),
+}
+
+SOIL_PIXELS = {
+    pot: None
+    for pot in POT_NAMES
 }
