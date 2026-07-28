@@ -142,12 +142,6 @@ VERSION = "2.0"
 # file_manager.py 互換設定
 # ==========================================
 
-ORIGINAL_FOLDER = "original"
-MASK_FOLDER = "mask"
-OVERLAY_FOLDER = "overlay"
-
-CSV_NAME = CSV_FILENAME
-
 # ==========================================
 # image_analysis.py 互換設定
 # ==========================================
