@@ -173,9 +173,3 @@ COLOR_RANGES = {
         np.array([20, 255, 255])
     ),
 }
-
-
-SOIL_PIXELS = {
-    pot: None
-    for pot in POT_NAMES
-}
