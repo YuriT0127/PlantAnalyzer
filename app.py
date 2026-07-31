@@ -11,7 +11,6 @@ import cv2
 from config import (
     APP_NAME,
     POT_NAMES,
-    SOIL_PIXELS,
     TREATMENTS
 )
 
@@ -67,19 +66,19 @@ treatment = TREATMENTS[pot]
 
 st.sidebar.write(f"処理区：{treatment}")
 
-soil_pixels = SOIL_PIXELS[pot]
+st.sidebar.subheader("土のPixel数")
 
-if soil_pixels is None:
+soil_pixels = st.sidebar.number_input(
 
-    st.sidebar.warning(
-        "土面積が未登録です"
-    )
+    "土のPixel数を入力",
 
-else:
+    min_value=1,
 
-    st.sidebar.success(
-        f"土面積：{soil_pixels} Pixel"
-    )
+    step=1,
+
+    value=1
+
+)
 
 # ==========================
 # 画像アップロード
@@ -280,6 +279,8 @@ save_csv(
     pot_name=pot,
 
     treatment=treatment,
+    
+    soil_pixels=soil_pixels,
 
     coverage=cover,
 
