@@ -55,6 +55,8 @@ def create_folders():
                 "Date",
                 "Time",
                 "Treatment",
+               
+                "SoilPixels",
 
                 "Coverage",
 
@@ -157,6 +159,7 @@ def save_csv(
 
         pot_name,
         treatment,
+        soil_pixels,
         coverage,
         leaf_pixels,
         pixels,
@@ -175,7 +178,8 @@ def save_csv(
         "Date": date,
         "Time": time,
         "Treatment": treatment,
-
+        "SoilPixels": soil_pixels,
+        
         "Coverage": coverage,
 
         "LeafPixels": leaf_pixels,
