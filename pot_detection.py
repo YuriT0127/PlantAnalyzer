@@ -56,7 +56,7 @@ def detect_edges(gray):
 
 def find_pot_contour(edges):
     """
-    植木鉢の輪郭を取得
+    植木鉢らしい四角形輪郭を取得
     """
 
     contours, _ = cv2.findContours(
@@ -68,13 +68,43 @@ def find_pot_contour(edges):
     if len(contours) == 0:
         return None
 
-    # 最大輪郭を植木鉢とみなす
-    contour = max(
+    best_contour = None
+    best_area = 0
+
+    for contour in contours:
+
+        area = cv2.contourArea(contour)
+
+        if area < 1000:
+            continue
+
+        epsilon = 0.02 * cv2.arcLength(
+            contour,
+            True
+        )
+
+        approx = cv2.approxPolyDP(
+            contour,
+            epsilon,
+            True
+        )
+
+        if len(approx) != 4:
+            continue
+
+        if area > best_area:
+
+            best_area = area
+            best_contour = contour
+
+    if best_contour is not None:
+        return best_contour
+
+    # 四角形が見つからない場合のみ最大輪郭を返す
+    return max(
         contours,
         key=cv2.contourArea
     )
-
-    return contour
 
 
 def approximate_pot(contour):
@@ -114,6 +144,70 @@ def get_pot_corners(approx):
 
     return corners
 
+def order_corners(corners):
+    """
+    四隅を
+    左上・右上・右下・左下
+    の順に並べ替える
+    """
+
+    pts = np.array(
+        corners,
+        dtype=np.float32
+    )
+
+    s = pts.sum(axis=1)
+    diff = np.diff(pts, axis=1)
+
+    ordered = np.zeros(
+        (4, 2),
+        dtype=np.float32
+    )
+
+    ordered[0] = pts[np.argmin(s)]
+    ordered[2] = pts[np.argmax(s)]
+    ordered[1] = pts[np.argmin(diff)]
+    ordered[3] = pts[np.argmax(diff)]
+
+    return ordered
+
+def warp_pot(image, corners):
+    """
+    植木鉢を真上から見た画像へ変換
+    """
+
+    if corners is None:
+        return image
+
+    corners = order_corners(corners)
+
+    size = 500
+
+    dst = np.float32([
+
+        [0, 0],
+
+        [size - 1, 0],
+
+        [size - 1, size - 1],
+
+        [0, size - 1]
+
+    ])
+
+    matrix = cv2.getPerspectiveTransform(
+        corners,
+        dst
+    )
+
+    warped = cv2.warpPerspective(
+        image,
+        matrix,
+        (size, size)
+    )
+
+    return warped
+    
 def calculate_scale(corners):
     """
     cm/pixel を計算
@@ -143,6 +237,8 @@ def calculate_scale(corners):
         mean_length
     )
 
+    if cm_per_pixel is None:
+    cm_per_pixel = POT_SIZE_CM / 500
     return cm_per_pixel
 
 
@@ -235,15 +331,22 @@ def detect_pot(image):
         corners
     )
 
-    return {
+warped = warp_pot(
+    image,
+    corners
+)
 
-        "corners": corners,
+return {
 
-        "cm_per_pixel": cm_per_pixel,
+    "corners": corners,
 
-        "pot_mask": pot_mask
+    "cm_per_pixel": cm_per_pixel,
 
-    }
+    "pot_mask": pot_mask,
+
+    "warped": warped
+
+}
 
 
 if __name__ == "__main__":
