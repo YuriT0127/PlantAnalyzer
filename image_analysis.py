@@ -201,13 +201,21 @@ def analyze_image(file):
         "cm_per_pixel"
     ]
 
+    warped = pot_result[
+        "warped"
+    ]
+
+    warped_leaf = extract_leaf(
+        warped
+    )
+
     color_result = analyze_colors(
         image,
         leaf_mask
     )
 
     leaf_area = calculate_leaf_area(
-        leaf_mask,
+        warped_leaf,
         cm_per_pixel
     )
 
