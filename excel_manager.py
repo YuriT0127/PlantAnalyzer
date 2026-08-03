@@ -7,10 +7,32 @@ import os
 import pandas as pd
 
 from config import (
+
     EXCEL_FILE,
-    LIGHT_CONDITION,
-    STIMULUS,
-    REPLICATE
+
+    RESULT_COLUMNS,
+
+    DATE_COLUMN,
+
+    POT_COLUMN,
+
+    LIGHT_COLUMN,
+
+    STIMULUS_COLUMN,
+
+    REPLICATE_COLUMN,
+
+    COVERAGE_COLUMN,
+
+    LEAF_AREA_COLUMN,
+
+    DARK_GREEN_COLUMN,
+
+    GREEN_COLUMN,
+
+    LIGHT_GREEN_COLUMN,
+
+    YELLOW_COLUMN
 )
 
 
@@ -101,7 +123,10 @@ def save_to_excel(
     )
 
     new_df = pd.DataFrame(
-        [record]
+
+        [new_row],
+
+        columns=RESULT_COLUMNS
     )
 
     if os.path.exists(EXCEL_FILE):
