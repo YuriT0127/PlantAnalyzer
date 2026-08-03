@@ -4,6 +4,7 @@ PlantAnalyzer Ver2.0
 """
 
 import cv2
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -75,17 +76,10 @@ if uploaded_file is not None:
 
     st.subheader("クラスタ情報")
 
-    color_options = [
-
-        "Dark Green",
-
-        "Green",
-
-        "Light Green",
-
-        "Yellow"
-
-    ]
+    from config import (
+    COLOR_OPTIONS,
+    COLOR_PATCH_SIZE
+    )
 
     user_mapping = {}
 
@@ -100,8 +94,12 @@ if uploaded_file is not None:
             b, g, r = cluster["bgr"]
 
             preview = np.zeros(
-                (120, 120, 3),
-                dtype=np.uint8
+    (
+        COLOR_PATCH_SIZE,
+        COLOR_PATCH_SIZE,
+        3
+    ),
+    dtype=np.uint8
             )
 
             preview[:] = (b, g, r)
@@ -131,6 +129,9 @@ if uploaded_file is not None:
             st.write(
                 f"Lab : ({l:.1f}, {a:.1f}, {b2:.1f})"
             )
+            st.write(
+    f"割合 : {cluster['ratio']:.2f}%"
+            )
 
             default_name = result[
                 "mapping"
@@ -143,7 +144,7 @@ if uploaded_file is not None:
 
                 "色名",
 
-                color_options,
+                COLOR_OPTIONS,
 
                 index=color_options.index(
                     default_name
