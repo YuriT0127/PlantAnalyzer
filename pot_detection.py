@@ -207,6 +207,49 @@ def warp_pot(image, corners):
     )
 
     return warped
+
+def warp_mask(mask, corners):
+    """
+    マスクを真上画像へ変換
+    """
+
+    if corners is None:
+        return mask
+
+    corners = order_corners(corners)
+
+    size = 500
+
+    dst = np.float32([
+
+        [0, 0],
+
+        [size - 1, 0],
+
+        [size - 1, size - 1],
+
+        [0, size - 1]
+
+    ])
+
+    matrix = cv2.getPerspectiveTransform(
+        corners,
+        dst
+    )
+
+    warped = cv2.warpPerspective(
+
+        mask,
+
+        matrix,
+
+        (size, size),
+
+        flags=cv2.INTER_NEAREST
+
+    )
+
+    return warped
     
 def calculate_scale(corners):
     """
@@ -331,10 +374,15 @@ def detect_pot(image):
         corners
     )
 
-warped = warp_pot(
-    image,
-    corners
-)
+    warped = warp_pot(
+        image,
+        corners
+    )
+
+    warped_mask = warp_mask(
+        pot_mask,
+        corners
+    )
 
 return {
 
@@ -344,7 +392,9 @@ return {
 
     "pot_mask": pot_mask,
 
-    "warped": warped
+    "warped": warped,
+
+    "warped_mask": warped_mask
 
 }
 
