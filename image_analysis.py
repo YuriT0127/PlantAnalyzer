@@ -222,31 +222,29 @@ def analyze_image(file):
 
     result = {
 
-        "original": image,
+    "original": image,
 
-        "overlay": overlay,
+    "overlay": overlay,
 
-        "leaf_mask": leaf_mask,
+    "leaf_mask": leaf_mask,
 
-        "pot_mask": pot_mask,
+    "pot_mask": pot_mask,
 
-        "coverage": coverage,
+    "coverage": coverage,
 
-        "leaf_area": leaf_area,
+    "leaf_area": leaf_area,
 
-        "best_k": color_result[
-            "best_k"
-        ],
+    "best_k": color_result["best_k"],
 
-        "color_ratio": color_result[
-            "ratio"
-        ],
+    "color_ratio": color_result["ratio"],
 
-        "cluster_centers": color_result[
-            "cluster_centers"
-        ],
+    "clusters": color_result["clusters"],
 
-        "cm_per_pixel": cm_per_pixel
+    "mapping": color_result["mapping"],
+
+    "cluster_centers": color_result["cluster_centers"],
+
+    "cm_per_pixel": cm_per_pixel
 
     }
 
