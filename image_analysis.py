@@ -205,6 +205,10 @@ def analyze_image(file):
         "warped"
     ]
 
+    warped_mask = pot_result[
+        "warped_mask"
+    ]
+
     warped_leaf = extract_leaf(
         warped
     )
@@ -220,8 +224,8 @@ def analyze_image(file):
     )
 
     coverage = calculate_coverage(
-        leaf_mask,
-        pot_mask
+        warped_leaf,
+        warped_mask
     )
 
     overlay = color_result[
