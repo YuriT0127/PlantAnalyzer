@@ -255,3 +255,17 @@ SAVE_MASK = True
 SAVE_GRAPH = True
 
 APP_VERSION = "2.1"
+
+DATE_COLUMN = "Date"
+POT_COLUMN = "Pot"
+LIGHT_COLUMN = "Light"
+STIMULUS_COLUMN = "Stimulus"
+REPLICATE_COLUMN = "Replicate"
+
+COVERAGE_COLUMN = "Coverage (%)"
+LEAF_AREA_COLUMN = "Leaf Area (cm²)"
+
+DARK_GREEN_COLUMN = "Dark Green"
+GREEN_COLUMN = "Green"
+LIGHT_GREEN_COLUMN = "Light Green"
+YELLOW_COLUMN = "Yellow"
