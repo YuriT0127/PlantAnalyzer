@@ -230,6 +230,62 @@ def calculate_color_ratio(labels, mapping):
 
     return result
 
+def create_cluster_info(model, labels):
+    """
+    各クラスタの情報を作成
+    """
+
+    centers = model.cluster_centers_
+
+    cluster_list = []
+
+    total = len(labels)
+
+    for i, center in enumerate(centers):
+
+        lab = np.float32([[center]])
+
+        bgr = cv2.cvtColor(
+            lab,
+            cv2.COLOR_Lab2BGR
+        )[0][0]
+
+        bgr = np.clip(
+            bgr,
+            0,
+            255
+        ).astype(np.uint8)
+
+        hsv = cv2.cvtColor(
+            np.uint8([[bgr]]),
+            cv2.COLOR_BGR2HSV
+        )[0][0]
+
+        pixel_count = int(
+            np.sum(labels == i)
+        )
+
+        cluster_list.append({
+
+            "id": i,
+
+            "lab": center.tolist(),
+
+            "bgr": bgr.tolist(),
+
+            "hsv": hsv.tolist(),
+
+            "pixel_count": pixel_count,
+
+            "ratio": (
+                pixel_count /
+                total
+            ) * 100
+
+        })
+
+    return cluster_list
+
 def create_color_overlay(image, leaf_mask, labels, mapping):
     """
     色分類画像を作成
@@ -277,18 +333,16 @@ def analyze_colors(image, leaf_mask):
     )
 
     if len(pixels) == 0:
-
         return {
-
             "best_k": 0,
-
             "ratio": {
                 name: 0
                 for name in COLOR_NAMES
             },
-
+            
+            "clusters": [],
+            "mapping": {},
             "overlay": image.copy()
-
         }
 
     model, labels, best_k = find_best_k(
@@ -303,6 +357,10 @@ def analyze_colors(image, leaf_mask):
         labels,
         mapping
     )
+    cluster_info = create_cluster_info(
+    model,
+    labels
+    )
 
     overlay = create_color_overlay(
         image,
@@ -313,15 +371,17 @@ def analyze_colors(image, leaf_mask):
 
     return {
 
-        "best_k": best_k,
+    "best_k": best_k,
 
-        "ratio": ratio,
+    "ratio": ratio,
 
-        "mapping": mapping,
+    "clusters": cluster_info,
 
-        "overlay": overlay,
+    "mapping": mapping,
 
-        "cluster_centers": model.cluster_centers_
+    "overlay": overlay,
+
+    "cluster_centers": model.cluster_centers_
 
     }
 
