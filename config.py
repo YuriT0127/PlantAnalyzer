@@ -256,16 +256,54 @@ SAVE_GRAPH = True
 
 APP_VERSION = "2.1"
 
+# ==================================================
+# Excel列名
+# ==================================================
+
 DATE_COLUMN = "Date"
+
 POT_COLUMN = "Pot"
+
 LIGHT_COLUMN = "Light"
+
 STIMULUS_COLUMN = "Stimulus"
+
 REPLICATE_COLUMN = "Replicate"
 
 COVERAGE_COLUMN = "Coverage (%)"
+
 LEAF_AREA_COLUMN = "Leaf Area (cm²)"
 
 DARK_GREEN_COLUMN = "Dark Green"
+
 GREEN_COLUMN = "Green"
+
 LIGHT_GREEN_COLUMN = "Light Green"
+
 YELLOW_COLUMN = "Yellow"
+
+RESULT_COLUMNS = [
+
+    DATE_COLUMN,
+
+    POT_COLUMN,
+
+    LIGHT_COLUMN,
+
+    STIMULUS_COLUMN,
+
+    REPLICATE_COLUMN,
+
+    COVERAGE_COLUMN,
+
+    LEAF_AREA_COLUMN,
+
+    DARK_GREEN_COLUMN,
+
+    GREEN_COLUMN,
+
+    LIGHT_GREEN_COLUMN,
+
+    YELLOW_COLUMN
+
+]
