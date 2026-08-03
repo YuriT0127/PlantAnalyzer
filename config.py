@@ -225,3 +225,33 @@ EXCEL_FILE = "PlantAnalyzer_Result.xlsx"
 CSV_FILE = "PlantAnalyzer_Result.csv"
 
 OUTPUT_DIR = "outputs"
+
+# ==================================================
+# 色選択
+# ==================================================
+
+COLOR_OPTIONS = [
+
+    "Dark Green",
+
+    "Green",
+
+    "Light Green",
+
+    "Yellow"
+
+]
+
+# ==================================================
+# UI
+# ==================================================
+
+COLOR_PATCH_SIZE = 120
+
+SAVE_OVERLAY = True
+
+SAVE_MASK = True
+
+SAVE_GRAPH = True
+
+APP_VERSION = "2.1"
