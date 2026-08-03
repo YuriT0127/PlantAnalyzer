@@ -39,10 +39,38 @@ from config import (
 def create_record(
     date,
     pot_name,
+    light,
+    stimulus,
+    replicate,
     result_ratio,
     coverage,
     leaf_area
 ):
+    return {
+
+    DATE_COLUMN: date,
+
+    POT_COLUMN: pot_name,
+
+    LIGHT_COLUMN: light,
+
+    STIMULUS_COLUMN: stimulus,
+
+    REPLICATE_COLUMN: replicate,
+
+    COVERAGE_COLUMN: coverage,
+
+    LEAF_AREA_COLUMN: leaf_area,
+
+    DARK_GREEN_COLUMN: result_ratio.get("Dark Green", 0),
+
+    GREEN_COLUMN: result_ratio.get("Green", 0),
+
+    LIGHT_GREEN_COLUMN: result_ratio.get("Light Green", 0),
+
+    YELLOW_COLUMN: result_ratio.get("Yellow", 0)
+
+    }
     """
     1レコード作成
     """
@@ -117,6 +145,9 @@ def save_to_excel(
     record = create_record(
         date,
         pot_name,
+        light,
+        stimulus,
+        replicate,
         result_ratio,
         coverage,
         leaf_area
