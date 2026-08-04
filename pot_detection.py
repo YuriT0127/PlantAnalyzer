@@ -281,8 +281,8 @@ def calculate_scale(corners):
     )
 
     if cm_per_pixel is None:
-    cm_per_pixel = POT_SIZE_CM / 500
-    return cm_per_pixel
+        cm_per_pixel = POT_SIZE_CM / 500
+        return cm_per_pixel
 
 
 def create_pot_mask(shape, corners):
