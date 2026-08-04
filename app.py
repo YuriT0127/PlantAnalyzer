@@ -9,6 +9,7 @@ import pandas as pd
 import streamlit as st
 
 from image_analysis import analyze_image
+from excel_manager import save_to_excel
 
 from config import (
 
