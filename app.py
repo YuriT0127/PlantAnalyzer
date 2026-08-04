@@ -10,6 +10,16 @@ import streamlit as st
 
 from image_analysis import analyze_image
 
+from config import (
+
+    LIGHT_CONDITION,
+
+    STIMULUS,
+
+    REPLICATE
+
+)
+
 st.set_page_config(
     page_title="PlantAnalyzer",
     layout="wide"
