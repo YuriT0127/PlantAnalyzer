@@ -99,8 +99,9 @@ def hsv_leaf_mask(image):
 
     return mask
 
-
 def grabcut_leaf(image, mask):
+    return mask
+
     """
     GrabCutで葉抽出
     """
