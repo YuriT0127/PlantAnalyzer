@@ -384,19 +384,18 @@ def detect_pot(image):
         corners
     )
 
-return {
+    return {
 
-    "corners": corners,
+        "corners": corners,
 
-    "cm_per_pixel": cm_per_pixel,
+        "cm_per_pixel": cm_per_pixel,
 
-    "pot_mask": pot_mask,
+        "pot_mask": pot_mask,
 
-    "warped": warped,
+        "warped": warped,
 
-    "warped_mask": warped_mask
-
-}
+        "warped_mask": warped_mask
+    }
 
 
 if __name__ == "__main__":
