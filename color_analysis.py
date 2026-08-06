@@ -16,7 +16,7 @@ from config import (
     MIN_K,
     MAX_K,
     RANDOM_STATE,
-    COLOR_NAME,
+    COLOR_NAMES,
     DRAW_COLORS,
     COLOR_OPTIONS
 )
