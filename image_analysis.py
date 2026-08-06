@@ -110,6 +110,12 @@ def grabcut_leaf(image, mask):
         cv2.GC_PR_FGD,
         cv2.GC_BGD
     ).astype("uint8")
+        # 前景・背景が不足している場合はGrabCutを使わない
+    fg = np.count_nonzero(mask)
+    bg = mask.size - fg
+
+    if fg < 100 or bg < 100:
+        return mask
 
     bgd = np.zeros(
         (1, 65),
@@ -121,15 +127,21 @@ def grabcut_leaf(image, mask):
         np.float64
   )
 
-    cv2.grabCut(
-        image,
-        gc_mask,
-        None,
-        bgd,
-        fgd,
-        5,
-        cv2.GC_INIT_WITH_MASK
-    )
+        try:
+
+        cv2.grabCut(
+            image,
+            gc_mask,
+            None,
+            bgd,
+            fgd,
+            5,
+            cv2.GC_INIT_WITH_MASK
+        )
+
+    except cv2.error:
+
+        return mask
 
     leaf_mask = np.where(
         (gc_mask == cv2.GC_FGD) |
