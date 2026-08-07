@@ -118,9 +118,11 @@ if uploaded_file is None:
 
 with st.spinner("解析中..."):
 
+    st.write("analyze_image開始")
+
     result = analyze_image(uploaded_file)
 
-result_ratio = result["color_ratio"]
+    st.write("analyze_image終了")
 
 # ==================================================
 # 解析画像
