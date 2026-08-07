@@ -189,7 +189,7 @@ def analyze_image(file):
     """
     PlantAnalyzer メイン解析
     """
-
+    print("① 開始")
     image = load_image(file)
 
     image = preprocess_image(
@@ -199,7 +199,7 @@ def analyze_image(file):
     leaf_mask = extract_leaf(
         image
     )
-
+    print("② detect_pot")
     pot_result = detect_pot(
         image
     )
@@ -219,11 +219,11 @@ def analyze_image(file):
     warped_mask = pot_result[
         "warped_mask"
     ]
-
+    print("③ extract_leaf")
     warped_leaf = extract_leaf(
         warped
     )
-
+    print("④ analyze_colors")
     color_result = analyze_colors(
         image,
         leaf_mask
@@ -271,6 +271,7 @@ def analyze_image(file):
 
     }
 
+    print("④ 結果作成")
     return result
 
 
