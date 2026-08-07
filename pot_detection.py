@@ -275,10 +275,12 @@ def calculate_scale(corners):
 
     mean_length = np.mean(lengths)
 
-    cm_per_pixel = (
-        POT_SIZE_CM /
-        mean_length
-    )
+    if mean_length <= 0:
+        return POT_SIZE_CM / 500
+
+    cm_per_pixel = POT_SIZE_CM / mean_length
+
+    return cm_per_pixel
 
     if cm_per_pixel is None:
         cm_per_pixel = POT_SIZE_CM / 500
