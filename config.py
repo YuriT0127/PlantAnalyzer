@@ -77,9 +77,12 @@ POT_OPTIONS = [
 ]
 
 CONDITION_OPTIONS = [
-    "Control",
-    "Shade30",
-    "Shade60"
+    "Sun_0lx",
+    "Sun_15lx",
+    "Sun_200lx",
+    "Shade_0lx",
+    "Shade_15lx",
+    "Shade_200lx"
 ]
 
 
