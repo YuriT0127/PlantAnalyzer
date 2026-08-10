@@ -290,8 +290,8 @@ if result is not None:
                 )
             )
 
-            r, g, b = rgb
-
+            
+            r, g, b = map(int, rgb)
             st.markdown(
                 f"""
                 <div style="
