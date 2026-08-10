@@ -58,9 +58,9 @@ def load_image(file):
 
 def extract_leaf(image):
     """
-    HSVを利用して植物の葉を抽出。
-
-    緑～黄色系の領域を葉として扱う。
+    HSV + ExGを利用して葉を抽出。
+    緑～黄緑系の領域を候補とし、
+    ExGで植物らしい緑を強調する。
     """
 
     hsv = cv2.cvtColor(
@@ -68,46 +68,54 @@ def extract_leaf(image):
         cv2.COLOR_BGR2HSV
     )
 
-    # 緑
+    # -------------------------
+    # HSVによる葉候補
+    # -------------------------
     lower_green = np.array(
-        [25, 30, 20],
+        [25, 45, 35],
         dtype=np.uint8
     )
 
     upper_green = np.array(
-        [95, 255, 255],
+        [90, 255, 255],
         dtype=np.uint8
     )
 
-    mask = cv2.inRange(
+    hsv_mask = cv2.inRange(
         hsv,
         lower_green,
         upper_green
     )
 
-    # 黄色系も含める
-    lower_yellow = np.array(
-        [15, 30, 20],
-        dtype=np.uint8
+    # -------------------------
+    # ExG (Excess Green)
+    # ExG = 2G - R - B
+    # -------------------------
+    b, g, r = cv2.split(image)
+
+    exg = (
+        2.0 * g.astype(np.float32)
+        - r.astype(np.float32)
+        - b.astype(np.float32)
     )
 
-    upper_yellow = np.array(
-        [35, 255, 255],
-        dtype=np.uint8
+    exg_mask = np.where(
+        exg > 20,
+        255,
+        0
+    ).astype(np.uint8)
+
+    # -------------------------
+    # HSVとExGを両方満たす
+    # -------------------------
+    mask = cv2.bitwise_and(
+        hsv_mask,
+        exg_mask
     )
 
-    yellow_mask = cv2.inRange(
-        hsv,
-        lower_yellow,
-        upper_yellow
-    )
-
-    mask = cv2.bitwise_or(
-        mask,
-        yellow_mask
-    )
-
+    # -------------------------
     # ノイズ除去
+    # -------------------------
     kernel = np.ones(
         (5, 5),
         np.uint8
