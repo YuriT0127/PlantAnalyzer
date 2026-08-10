@@ -761,7 +761,10 @@ def detect_pot(
                     dtype=np.uint8
                 ),
             "warped":
-                image.copy(),
+                cv2.resize(
+                    image,
+                    (WARP_SIZE, WARP_SIZE)
+                ),
             "warped_mask":
                 np.ones(
                     (
@@ -795,7 +798,10 @@ def detect_pot(
                     dtype=np.uint8
                 ),
             "warped":
-                image.copy(),
+                cv2.resize(
+                    image,
+                    (WARP_SIZE, WARP_SIZE)
+                ),
             "warped_mask":
                 np.ones(
                     (
