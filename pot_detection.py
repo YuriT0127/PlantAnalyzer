@@ -234,8 +234,10 @@ def find_pot_contour(
     """
     植木鉢らしい四角形を探す。
 
-    単純に最大輪郭を使わず、
-    妥当な四角形の中から最大のものを選ぶ。
+    ・画像端に接している四角形を除外
+    ・極端に細長い四角形を除外
+    ・画像中央に近い四角形を優先
+    ・その中で面積が大きいものを選択
     """
 
     contours, _ = cv2.findContours(
@@ -247,22 +249,31 @@ def find_pot_contour(
     if not contours:
         return None
 
-    candidates = []
+    height, width = image_shape[:2]
 
     image_area = (
-        image_shape[0]
-        * image_shape[1]
+        height * width
     )
+
+    image_center = np.array(
+        [width / 2.0, height / 2.0],
+        dtype=np.float32
+    )
+
+    candidates = []
 
     for contour in contours:
 
         area = abs(
-            cv2.contourArea(
-                contour
-            )
+            cv2.contourArea(contour)
         )
 
-        if area < image_area * 0.01:
+        # 小さすぎるものを除外
+        if area < image_area * 0.03:
+            continue
+
+        # 大きすぎるものを除外
+        if area > image_area * 0.80:
             continue
 
         perimeter = cv2.arcLength(
@@ -273,18 +284,19 @@ def find_pot_contour(
         if perimeter <= 0:
             continue
 
-        # 複数のepsilonを試す
+        found = False
+
         for epsilon_ratio in [
             0.01,
             0.015,
             0.02,
-            0.03
+            0.03,
+            0.04
         ]:
 
             approx = cv2.approxPolyDP(
                 contour,
-                epsilon_ratio
-                * perimeter,
+                epsilon_ratio * perimeter,
                 True
             )
 
@@ -296,31 +308,101 @@ def find_pot_contour(
                 .astype(np.float32)
             )
 
+            # --------------------------------
+            # 画像端に接している四角形を除外
+            # --------------------------------
+
+            margin_x = width * 0.02
+            margin_y = height * 0.02
+
+            if np.any(
+                corners[:, 0] < margin_x
+            ):
+                continue
+
+            if np.any(
+                corners[:, 0] > width - margin_x
+            ):
+                continue
+
+            if np.any(
+                corners[:, 1] < margin_y
+            ):
+                continue
+
+            if np.any(
+                corners[:, 1] > height - margin_y
+            ):
+                continue
+
+            # --------------------------------
+            # 四角形として妥当か確認
+            # --------------------------------
+
             if not is_valid_quadrilateral(
                 corners,
                 image_shape
             ):
                 continue
 
+            # --------------------------------
+            # 中心位置を計算
+            # --------------------------------
+
+            center = np.mean(
+                corners,
+                axis=0
+            )
+
+            center_distance = np.linalg.norm(
+                center - image_center
+            )
+
+            max_distance = np.linalg.norm(
+                image_center
+            )
+
+            center_score = (
+                1.0
+                - center_distance
+                / max_distance
+            )
+
+            # --------------------------------
+            # 面積スコア
+            # --------------------------------
+
+            area_score = (
+                area / image_area
+            )
+
+            # 中央にある大きめの四角形を優先
+            score = (
+                area_score * 0.7
+                + center_score * 0.3
+            )
+
             candidates.append(
                 (
+                    score,
                     area,
                     contour
                 )
             )
 
+            found = True
             break
 
     if not candidates:
         return None
 
-    # 最も大きい妥当な四角形
+    # スコア最大の四角形を採用
     candidates.sort(
         key=lambda x: x[0],
         reverse=True
     )
 
-    return candidates[0][1]
+    return candidates[0][2]
 
 
 # =========================================================
