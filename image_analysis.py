@@ -358,44 +358,38 @@ def analyze_image(file):
     )
 
     # ---------------------
-    # 6. 正面化した葉マスク
-    # ---------------------
+# 6. 正面化した葉マスク
+# ---------------------
 
-    from pot_detection import warp_mask
+from pot_detection import warp_mask
 
-        warped_leaf_mask = (
-        warp_mask(
-            leaf_mask_refined,
-            corners
-        )
-    )
+warped_leaf_mask = warp_mask(
+    leaf_mask_refined,
+    corners
+)
 
-    # ---------------------
-    # 正面化後もポット内部だけを解析対象にする
-    # ---------------------
+# 正面化後もポット内部だけを解析対象にする
+warped_leaf_mask = cv2.bitwise_and(
+    warped_leaf_mask,
+    warped_mask
+)
 
-    warped_leaf_mask = cv2.bitwise_and(
-        warped_leaf_mask,
-        warped_mask
-    )
+# ポットの境界付近を少し内側に縮める
+kernel = np.ones(
+    (7, 7),
+    np.uint8
+)
 
-    # ポットの境界付近を少し内側に縮める
-    kernel = np.ones(
-        (7, 7),
-        np.uint8
-    )
+warped_mask_inner = cv2.erode(
+    warped_mask,
+    kernel,
+    iterations=2
+)
 
-    warped_mask_inner = cv2.erode(
-        warped_mask,
-        kernel,
-        iterations=2
-    )
-
-    warped_leaf_mask = cv2.bitwise_and(
-        warped_leaf_mask,
-        warped_mask_inner
-    )
-    )
+warped_leaf_mask = cv2.bitwise_and(
+    warped_leaf_mask,
+    warped_mask_inner
+)
 
     # ---------------------
     # 7. 葉面積
