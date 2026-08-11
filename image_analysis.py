@@ -345,12 +345,8 @@ def analyze_image(file):
     # 5. GrabCut
     # ---------------------
 
-    leaf_mask_refined = (
-        grabcut_leaf(
-            image,
-            leaf_mask_inside
-        )
-    )
+    # GrabCutは一旦使用しない
+    leaf_mask_refined = leaf_mask_inside
 
     leaf_mask_refined = (
         clean_leaf_mask(
