@@ -155,12 +155,10 @@ def extract_leaf_pixels(
     leaf_mask
 ):
     """
-    leaf_maskの中から植物色だけを抽出し、
-    Labピクセルを返す。
+    leaf_maskの中から植物色だけを抽出。
 
-    戻り値:
-        pixels
-        plant_mask
+    KMeansには最大10000ピクセルだけ渡す。
+    Overlay用には、サンプリングした座標も返す。
     """
 
     plant_mask = create_plant_color_mask(
@@ -168,22 +166,56 @@ def extract_leaf_pixels(
         leaf_mask
     )
 
-    pixels = lab_image[
-        plant_mask > 0
-    ]
+    points = np.column_stack(
+        np.where(
+            plant_mask > 0
+        )
+    )
 
-    if len(pixels) == 0:
+    if len(points) == 0:
         return (
             np.empty(
                 (0, 3),
                 dtype=np.uint8
             ),
-            plant_mask
+            plant_mask,
+            np.empty(
+                (0, 2),
+                dtype=np.int32
+            )
         )
+
+    MAX_PIXELS = 10000
+
+    if len(points) > MAX_PIXELS:
+
+        rng = np.random.default_rng(
+            RANDOM_STATE
+        )
+
+        indices = rng.choice(
+            len(points),
+            MAX_PIXELS,
+            replace=False
+        )
+
+        points_sampled = points[
+            indices
+        ]
+
+    else:
+
+        points_sampled = points
+
+    pixels = lab_image[
+        points_sampled[:, 0],
+        points_sampled[:, 1]
+    ]
 
     return (
         pixels,
-        plant_mask
+        plant_mask,
+        points_sampled
     )
 
 
@@ -569,7 +601,7 @@ def create_cluster_info(
 
 def create_color_overlay(
     image,
-    plant_mask,
+    points,
     labels,
     mapping
 ):
@@ -594,12 +626,6 @@ def create_color_overlay(
         "Yellow":
             (0, 255, 255)
     }
-
-    points = np.column_stack(
-        np.where(
-            plant_mask > 0
-        )
-    )
 
     # 念のため長さを一致
     count = min(
@@ -648,12 +674,12 @@ def analyze_colors(
         image
     )
 
-    pixels, plant_mask = (
-        extract_leaf_pixels(
-            lab,
-            image,
-            leaf_mask
-        )
+    pixels, plant_mask, sampled_points = (
+    extract_leaf_pixels(
+        lab,
+        image,
+        leaf_mask
+    )
     )
 
     # -----------------------------------------------------
@@ -730,7 +756,7 @@ def analyze_colors(
     overlay = (
         create_color_overlay(
             image,
-            plant_mask,
+            sampled_points,
             labels,
             mapping
         )
