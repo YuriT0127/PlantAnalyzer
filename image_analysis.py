@@ -325,13 +325,13 @@ def analyze_image(file):
         "pot_mask"
     ]
 
-    warped = pot_result[
-        "warped"
-    ]
+    # =========================
+    # 植木鉢マスク
+    # =========================
 
-    warped_mask = pot_result[
-        "warped_mask"
-    ]
+    warped = image
+
+    warped_mask = pot_result["pot_mask"]
 
     # =========================
     # 4. 正面化画像で葉抽出
