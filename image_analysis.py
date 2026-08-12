@@ -8,7 +8,6 @@ from pot_detection import (
     detect_pot,
     calculate_leaf_area,
     calculate_coverage,
-    warp_mask,
 )
 
 from color_analysis import (
@@ -273,42 +272,46 @@ def analyze_image(file):
     """
     画像1枚を解析。
 
-    戻り値：
+    処理順：
+    1. 画像読み込み
+    2. 植木鉢検出
+    3. 植木鉢の透視補正
+    4. 正面化画像で葉を抽出
+    5. ポット内部だけに限定
+    6. 葉面積計算
+    7. 被覆率計算
+    8. 葉色解析
 
-    image
-    leaf_mask
-    pot_result
-    warped
-    warped_mask
-    warped_leaf_mask
-    leaf_area
-    coverage
-    color_result
+    GrabCutは使用しない。
     """
 
-    # ---------------------
-    # 1. 読み込み
-    # ---------------------
+    # =========================
+    # 1. 画像読み込み
+    # =========================
 
-    image = load_image(
-        file
-    )
+    image = load_image(file)
 
-    # ---------------------
-    # 2. 葉抽出
-    # ---------------------
-
-    leaf_mask = extract_leaf(
-        image
-    )
-
-    # ---------------------
-    # 3. ポット検出
-    # ---------------------
+    # =========================
+    # 2. 植木鉢検出
+    # =========================
 
     pot_result = detect_pot(
         image
     )
+
+    # 検出失敗を明示的に停止
+    if not pot_result.get(
+        "detected",
+        False
+    ):
+        raise ValueError(
+            "植木鉢を正しく検出できませんでした。"
+            "植木鉢全体が画像に入っているか確認してください。"
+        )
+
+    # =========================
+    # 3. 植木鉢情報
+    # =========================
 
     corners = pot_result[
         "corners"
@@ -330,48 +333,35 @@ def analyze_image(file):
         "warped_mask"
     ]
 
-    # ---------------------
-    # 4. 葉マスクをポット内に限定
-    # ---------------------
+    # =========================
+    # 4. 正面化画像で葉抽出
+    # =========================
+    #
+    # 元画像ではなく、
+    # 透視補正後の画像を解析する。
+    #
 
-    leaf_mask_inside = (
-        cv2.bitwise_and(
-            leaf_mask,
-            pot_mask
-        )
+    leaf_mask_warped = extract_leaf(
+        warped
     )
 
-    # ---------------------
-    # 5. GrabCut
-    # ---------------------
+    # =========================
+    # 5. ポット内部だけに限定
+    # =========================
 
-    # GrabCutは一旦使用しない
-    leaf_mask_refined = leaf_mask_inside
-
-    leaf_mask_refined = (
-        clean_leaf_mask(
-            leaf_mask_refined
-        )
-    )
-
-    # ---------------------
-    # 6. 正面化した葉マスク
-    # ---------------------
-
-    from pot_detection import warp_mask
-
-    warped_leaf_mask = warp_mask(
-        leaf_mask_refined,
-        corners
-    )
-
-    # 正面化後もポット内部だけを解析対象にする
     warped_leaf_mask = cv2.bitwise_and(
-        warped_leaf_mask,
+        leaf_mask_warped,
         warped_mask
     )
 
-    # ポットの境界付近を少し内側に縮める
+    # =========================
+    # 6. ポット境界付近を除外
+    # =========================
+    #
+    # 境界線や床などの誤認識を
+    # 少し安全側に除外する。
+    #
+
     kernel = np.ones(
         (7, 7),
         np.uint8
@@ -388,36 +378,73 @@ def analyze_image(file):
         warped_mask_inner
     )
 
-    # ---------------------
-    # 7. 葉面積
-    # ---------------------
+    # =========================
+    # 7. 葉マスクのノイズ除去
+    # =========================
+
+    warped_leaf_mask = clean_leaf_mask(
+        warped_leaf_mask
+    )
+
+    # =========================
+    # 8. 異常チェック
+    # =========================
+
+    pot_pixels = np.count_nonzero(
+        warped_mask_inner
+    )
+
+    leaf_pixels = np.count_nonzero(
+        warped_leaf_mask
+    )
+
+    if pot_pixels == 0:
+        raise ValueError(
+            "植木鉢の解析領域が取得できませんでした。"
+        )
+
+    # 葉がポット全体の99%以上なら
+    # 明らかな誤認識として扱う
+    if (
+        leaf_pixels
+        / pot_pixels
+        > 0.99
+    ):
+        raise ValueError(
+            "葉の認識範囲が異常に広くなっています。"
+            "植木鉢の検出または葉の抽出に失敗した可能性があります。"
+        )
+
+    # =========================
+    # 9. 葉面積
+    # =========================
 
     leaf_area = calculate_leaf_area(
         warped_leaf_mask,
         cm_per_pixel
     )
 
-    # ---------------------
-    # 8. 被覆率
-    # ---------------------
+    # =========================
+    # 10. 被覆率
+    # =========================
 
     coverage = calculate_coverage(
         warped_leaf_mask,
-        warped_mask
+        warped_mask_inner
     )
 
-    # ---------------------
-    # 9. 色解析
-    # ---------------------
+    # =========================
+    # 11. 色解析
+    # =========================
 
     color_result = analyze_colors(
         warped,
         warped_leaf_mask
     )
 
-    # ---------------------
-    # 10. 結果
-    # ---------------------
+    # =========================
+    # 12. 結果
+    # =========================
 
     return {
 
@@ -437,10 +464,10 @@ def analyze_image(file):
             warped,
 
         "warped_mask":
-            warped_mask,
+            warped_mask_inner,
 
         "leaf_mask":
-            leaf_mask_refined,
+            warped_leaf_mask,
 
         "warped_leaf_mask":
             warped_leaf_mask,
@@ -453,17 +480,4 @@ def analyze_image(file):
 
         "color_result":
             color_result
-
     }
-
-
-# =========================
-# テスト
-# =========================
-
-if __name__ == "__main__":
-
-    print(
-        "image_analysis.py "
-        "loaded successfully."
-  )
